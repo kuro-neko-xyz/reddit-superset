@@ -1,7 +1,9 @@
 import type { MinimalPost, MinimalPosts } from "../../models/minimalPost";
 
-const getPosts = async (): Promise<MinimalPosts> => {
-  const response = await fetch("https://www.reddit.com/.json");
+const getPosts = async (after = ""): Promise<MinimalPosts> => {
+  const response = await fetch(
+    `https://www.reddit.com/.json?limit=2${after ? `&after=${after}` : ""}`
+  );
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
