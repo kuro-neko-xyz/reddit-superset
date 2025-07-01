@@ -10,7 +10,8 @@ function App() {
   const [initialY, setInitialY] = useState<number>(0);
 
   useEffect(() => {
-    getPosts()
+    const after = localStorage.getItem("after") || "";
+    getPosts(after)
       .then((data) => {
         setCurrentPost(data[0] || null);
         setNextPost(data[1] || null);
@@ -28,12 +29,14 @@ function App() {
     const currentY = event.touches[0].clientY;
     const deltaY = currentY - initialY;
 
-    if (Math.abs(deltaY) > 50) {
+    if (Math.abs(deltaY) > 50 && currentPost) {
       if (deltaY < 0) {
         // Swipe up
+        const currentPostId = currentPost.id;
         setCurrentPost(nextPost);
         setNextPost(null);
-        const after = `t3_${currentPost.id}`;
+        const after = `t3_${currentPostId}`;
+        localStorage.setItem("after", after);
         getPosts(after)
           .then((data) => {
             if (data.length > 0) {
