@@ -1,0 +1,25 @@
+{
+  "lang": "en-US",
+  "name": "Reddit Superset",
+  "short_name": "Reddit Superset",
+  "description": "An even more addictive form of Reddit",
+  "start_url": "/",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    }
+  ]
+}
