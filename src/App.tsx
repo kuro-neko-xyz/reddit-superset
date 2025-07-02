@@ -10,11 +10,21 @@ function App() {
   const [initialY, setInitialY] = useState<number>(0);
 
   useEffect(() => {
+    const currentDate = new Date().toDateString();
+
+    if (localStorage.getItem("lastFetchDate") !== currentDate) {
+      localStorage.removeItem("after");
+    }
+
     const after = localStorage.getItem("after") || "";
+
     getPosts(after)
       .then((data) => {
         setCurrentPost(data[0] || null);
         setNextPost(data[1] || null);
+
+        localStorage.setItem("after", `t3_${data[0].id}`);
+        localStorage.setItem("lastFetchDate", currentDate);
       })
       .catch((error) => {
         console.error("Error fetching posts:", error);
@@ -37,6 +47,7 @@ function App() {
         setNextPost(null);
         const after = `t3_${currentPostId}`;
         localStorage.setItem("after", after);
+        localStorage.setItem("lastFetchDate", new Date().toDateString());
         getPosts(after)
           .then((data) => {
             if (data.length > 0) {
