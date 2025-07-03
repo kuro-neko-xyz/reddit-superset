@@ -8,6 +8,7 @@ function App() {
   const [currentPost, setCurrentPost] = useState<MinimalPost | null>(null);
   const [nextPost, setNextPost] = useState<MinimalPost | null>(null);
   const [initialY, setInitialY] = useState<number>(0);
+  const [timeout, setTimeoutState] = useState<number | null>(null);
 
   useEffect(() => {
     const currentDate = new Date().toDateString();
@@ -22,6 +23,7 @@ function App() {
       setCurrentPost,
       setNextPost,
       after: after,
+      timeout: null,
     });
   }, []);
 
@@ -46,8 +48,29 @@ function App() {
           setCurrentPost,
           setNextPost,
           after: after,
+          timeout: null,
         });
       }
+    }
+  };
+
+  const handleWheel = async (event: React.WheelEvent) => {
+    if (event.deltaY > 0 && nextPost) {
+      // Scroll down
+      const currentPostId = currentPost?.id;
+      setCurrentPost(nextPost);
+      setNextPost(null);
+
+      const after = `t3_${currentPostId}`;
+
+      setTimeoutState(
+        await fetchPosts({
+          setCurrentPost,
+          setNextPost,
+          after,
+          timeout,
+        })
+      );
     }
   };
 
@@ -57,6 +80,7 @@ function App() {
       nextPost={nextPost}
       handleTouchStart={handleTouchStart}
       handleTouchMove={handleTouchMove}
+      handleWheel={handleWheel}
     />
   );
 }
