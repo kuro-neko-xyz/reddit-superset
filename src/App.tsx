@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import getPosts from "./transforms/posts";
-import styles from "./styles.module.scss";
 import type { MinimalPost } from "./models/minimalPost";
+import fetchPosts from "./utils/fetchPosts";
+import Container from "./components/Container";
 
 function App() {
   const [currentPost, setCurrentPost] = useState<MinimalPost | null>(null);
@@ -18,17 +18,11 @@ function App() {
 
     const after = localStorage.getItem("after") || "";
 
-    getPosts(after)
-      .then((data) => {
-        setCurrentPost(data[0] || null);
-        setNextPost(data[1] || null);
-
-        localStorage.setItem("after", `t3_${data[0].id}`);
-        localStorage.setItem("lastFetchDate", currentDate);
-      })
-      .catch((error) => {
-        console.error("Error fetching posts:", error);
-      });
+    fetchPosts({
+      setCurrentPost,
+      setNextPost,
+      after: after,
+    });
   }, []);
 
   const handleTouchStart = (event: React.TouchEvent) => {
@@ -45,45 +39,25 @@ function App() {
         const currentPostId = currentPost.id;
         setCurrentPost(nextPost);
         setNextPost(null);
+
         const after = `t3_${currentPostId}`;
-        localStorage.setItem("after", after);
-        localStorage.setItem("lastFetchDate", new Date().toDateString());
-        getPosts(after)
-          .then((data) => {
-            if (data.length > 0) {
-              setNextPost(data[1]);
-            } else {
-              throw new Error("No more posts available");
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching next posts:", error);
-          });
+
+        fetchPosts({
+          setCurrentPost,
+          setNextPost,
+          after: after,
+        });
       }
     }
   };
 
-  if (!currentPost || !nextPost) {
-    return <div className={styles.loading}>Loading...</div>;
-  }
-
   return (
-    <div
-      className={styles.container}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-    >
-      <div key={currentPost.id} className={styles.post}>
-        {currentPost.image && (
-          <img src={currentPost.image} alt={currentPost.title} />
-        )}
-        <h2>{currentPost.title}</h2>
-      </div>
-      <div key={nextPost.id} className={styles.post}>
-        {nextPost.image && <img src={nextPost.image} alt={nextPost.title} />}
-        <h2>{nextPost.title}</h2>
-      </div>
-    </div>
+    <Container
+      currentPost={currentPost}
+      nextPost={nextPost}
+      handleTouchStart={handleTouchStart}
+      handleTouchMove={handleTouchMove}
+    />
   );
 }
 
