@@ -7,6 +7,7 @@ interface ContainerProps {
   nextPost: MinimalPost | null;
   handleTouchStart: (event: React.TouchEvent) => void;
   handleTouchMove: (event: React.TouchEvent) => void;
+  handleWheel: (event: React.WheelEvent) => void;
 }
 
 const Container: FC<ContainerProps> = ({
@@ -14,6 +15,7 @@ const Container: FC<ContainerProps> = ({
   nextPost,
   handleTouchStart,
   handleTouchMove,
+  handleWheel,
 }) => {
   if (!currentPost || !nextPost) {
     return <div className={styles.loading}>Loading...</div>;
@@ -24,6 +26,7 @@ const Container: FC<ContainerProps> = ({
       className={styles.container}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
+      onWheel={handleWheel}
     >
       <div key={currentPost.id} className={styles.post}>
         {currentPost.image && (
